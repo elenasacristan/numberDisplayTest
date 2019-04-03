@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>HolidaysYa</title>
+    <link rel="stylesheet" type="text/css" href="static/css/dc.min.css" />
+
+    <script src="static/js/d3.min.js"></script>
+    <script src="static/js/crossfilter.min.js"></script>
+    <script src="static/js/dc.min.js"></script>
+
+</head>
+
+<body>
+
+    <div class="col-md-2 col-sm-12 col-xs-12">
+        <div id="filterByCity"></div>
+
+    </div>
+    <div class="x_content numberDisplay" id="maxTemp"></div>
+
+    <script type="text/javascript">
+
+        //Data example
+        // city,maxTemp
+        // Vienna,2.5,
+        // Brussels,4.8
+        // Prague,1.8
+        // Paris,6
+
+        d3.csv("data/data3.csv", function (errors, data) {
+            var ndx = crossfilter(data);
+            var dim = ndx.dimension(dc.pluck('city'));
+            var group = dim.group();
+
+// You can select multiple cities
+            dc.selectMenu('#filterByCity')
+                .multiple(true)
+                .dimension(dim)
+                .group(group)
+                .render();
+
+
+           // var maxTempDim = ndx.dimension(dc.pluck('maxTemp' ));
+            // maxMaxTemp = maxTempDim.top(1)[0].maxTemp;
+            // console.log(maxMaxTemp);
+            
+       
+        //What I want is to find the maximun of the maxTemp field for the cities filtered
+        //For example if we filter by Paris and Vienna in the number display I should see "6"
+
+
+        //The code below will show the addition but I need the maximun out of the maxTemp selected
+           var maxTempGroup = ndx.groupAll().reduceSum(dc.pluck('maxTemp' ));
+          
+
+           dc.numberDisplay('#maxTemp')
+               .group(maxTempGroup)
+               .valueAccessor(function(d){
+                   return d;
+               })
+               .formatNumber(d3.format('.2'))
+               .render();
+
+
+
+               
+
+        });
+    </script>
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
